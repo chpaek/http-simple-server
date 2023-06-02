@@ -14,8 +14,41 @@
              [clojure.data.csv :as csv]
              [clojure.java.io :as io]
              [clojure.data.json :as json]
+             [ring.swagger.swagger2 :as rs]
+             [schema.core :as s]
              )
   )
+
+(rs/swagger-json {})
+
+
+(s/defschema User {:id s/Str,
+                   :name s/Str
+                   :address {:street s/Str
+                             :city (s/enum :tre :hki)}})
+
+(s/with-fn-validation
+  (rs/swagger-json
+    {:info {:version "1.0.0"
+            :title "Sausages"
+            :description "Sausage description"
+            :termsOfService "http://helloreverb.com/terms/"
+            :contact {:name "My API Team"
+                      :email "foo@example.com"
+                      :url "http://www.metosin.fi"}
+            :license {:name "Eclipse Public License"
+                      :url "http://www.eclipse.org/legal/epl-v10.html"}}
+     :tags [{:name "user"
+             :description "User stuff"}]
+     :paths {"/api/ping" {:get {}}
+             "/user/:id" {:post {:summary "User Api"
+                                 :description "User Api description"
+                                 :tags ["user"]
+                                 :parameters {:path {:id s/Str}
+                                              :body User}
+                                 :responses {200 {:schema User
+                                                  :description "Found it!"}
+                                             404 {:description "Ohnoes."}}}}}}))
 (defn load-csv
   [path]
   println path
@@ -43,18 +76,21 @@
 ;    (route/not-found "Not the route you are looking for"))
 
 (defroutes routes
-            (GET "/string" request "a simple string response")
-            (GET "/ds" request
-                            {:status 200
-                             :headers {"Content-Type" "application/json"}
-                             :body  "nested data structure"})
-           (GET "/sum_absolute" request ( load-csv "/home/chang/clojure/http-simple-server/posts_new.csv"))
-           (GET "/sum" request
-                {:status 200
+           (GET "/string" request "a simple string response")
+           (GET "/" request
+                {:status  200
                  :headers {"Content-Type" "application/json"}
-                 :body  (count_sum ( load-csv "posts_new.csv"))
-                 } )
-            (route/not-found "Not found"))
+                 :body      (json/write-str {:message "server check" })})
+           (GET "/sum_absolute" request (load-csv "/home/chang/clojure/http-simple-server/posts_new.csv"))
+           (GET "/sum" request
+                {:status  200
+                 :headers {"Content-Type" "application/json"}
+                 :body    (count_sum (load-csv "posts_new.csv"))
+                 })
+           (GET "/swagger.json" request {:get (swagger-json)} )
+           (GET "/api-docs/*" request {:get (swagger-ui/create-swagger-ui-handler)} )
+           ;(route/not-found "Not found")
+           )
 
 
 

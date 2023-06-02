@@ -10,6 +10,7 @@
                  [compojure "1.7.0"]
                  [org.clojure/data.csv "1.0.1"]
                  [org.clojure/data.json "2.4.0"]
+                 [metosin/ring-swagger "0.26.2"]
                  ]
   ;;:repl-options {:init-ns http-simple-server.core}
   :main http-simple-server.core )
