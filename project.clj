@@ -8,6 +8,8 @@
                  [ring/ring-core "1.10.0"]
                  [ring/ring-jetty-adapter "1.10.0"]
                  [compojure "1.7.0"]
+                 [org.clojure/data.csv "1.0.1"]
+                 [org.clojure/data.json "2.4.0"]
                  ]
   ;;:repl-options {:init-ns http-simple-server.core}
   :main http-simple-server.core )
