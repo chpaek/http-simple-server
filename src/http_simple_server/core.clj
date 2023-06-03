@@ -19,7 +19,7 @@
              )
   )
 
-(rs/swagger-json {})
+
 
 
 (s/defschema User {:id s/Str,
@@ -56,13 +56,14 @@
     (doall
       (csv/read-csv reader))))
 
-(defn remove_header
+(defn   remove_header
   [csv header]
   (filter #(not= header (first %)) csv))
 (defn count_sum
   [csv]
   ;(json/write-str {:sum (count csv) })
-  (json/write-str {:sum (count (remove_header csv "post_id" )) })
+  ;(json/write-str {:sum (count (remove_header csv "post_id" )) })
+  (count (remove_header csv "post_id" ))
   )
 
 ;(defroutes routes
@@ -85,10 +86,10 @@
            (GET "/sum" request
                 {:status  200
                  :headers {"Content-Type" "application/json"}
-                 :body    (count_sum (load-csv "posts_new.csv"))
+                 :body    (json/write-str {:sum (count_sum (load-csv "posts_new.csv"))  })
                  })
-           (GET "/swagger.json" request {:get (swagger-json)} )
-           (GET "/api-docs/*" request {:get (swagger-ui/create-swagger-ui-handler)} )
+           ;(GET "/swagger.json" request {:get (swagger-json)} )
+           ;(GET "/api-docs/*" request {:get (swagger-ui/create-swagger-ui-handler)} )
            ;(route/not-found "Not found")
            )
 
@@ -104,6 +105,6 @@
 
 (defn -main
   []  
-  (run-jetty routes {:port 3001 :join? true}))
+  (run-jetty routes {:port 5678 :join? true}))
 
 
